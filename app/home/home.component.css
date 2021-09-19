@@ -1,0 +1,33 @@
+.form-task div label{
+    font-weight: 500;
+    font-size: 16px;
+}
+
+#add_task{
+    display: none;
+}
+    
+legend{
+    font-weight: 500;
+    font-size: 16px;  
+}
+
+.container{
+    margin-top: 30px;
+    padding-right: 0px;
+}
+.status_list{
+    background-color: #f1f1eb;
+    align-content: center;
+    padding: 0px;
+    padding-bottom: 10px;
+}
+
+.status_list h1{
+    text-align: center;
+}
+
+.task_cards{
+    margin-top: 10px;
+    width: 90%;
+}

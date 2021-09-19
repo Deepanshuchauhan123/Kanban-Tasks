@@ -1,0 +1,308 @@
+<form [formGroup]="addTaskForm" (ngSubmit)="onSubmit()"
+  class="container my-5 border border-primary rounded p-4 form-task" id="add_task">
+  <!-- Task title.  -->
+  <div class="form-group row my-3">
+    <label for="inputtitle" class="col-sm-2 col-form-label">Title</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" formControlName="title" id="inputtitle" placeholder="Title">
+    </div>
+  </div>
+  <!-- Task Description -->
+  <div class="form-group row my-3">
+    <label for="inputdesc" class="col-sm-2 col-form-label">Description</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" formControlName="desc" id="inputdesc" placeholder="Description">
+    </div>
+  </div>
+  <!-- Task Status. -->
+  <fieldset class="form-group my-3">
+    <div class="row">
+      <legend class="col-form-label col-sm-2 pt-0">Task Status</legend>
+      <div class="col-sm-10">
+        <div class="form-check">
+          <input class="form-check-input" [(ngModel)]="gridRadiosStatus" formControlName="gridRadiosStatus" type="radio"
+            name="gridRadiosStatus" id="gridRadiosStatus1" value="New" checked>
+          <label class="form-check-label" for="gridRadiosStatus1">
+            New
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" [(ngModel)]="gridRadiosStatus" formControlName="gridRadiosStatus" type="radio"
+            name="gridRadiosStatus" id="gridRadiosStatus2" value="In Progress">
+          <label class="form-check-label" for="gridRadiosStatus2">
+            In Progress
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" [(ngModel)]="gridRadiosStatus" formControlName="gridRadiosStatus" type="radio"
+            name="gridRadiosStatus" id="gridRadiosStatus3" value="Completed">
+          <label class="form-check-label" for="gridRadiosStatus3">
+            Completed
+          </label>
+        </div>
+      </div>
+    </div>
+  </fieldset>
+  <!-- Creation Date input field. -->
+  <div class="form-group row my-3">
+    <label for="inputCreateDate" class="col-sm-2 col-form-label">Creation Date</label>
+    <div class="col-sm-10">
+      <input type="date" class="form-control" id="inputCreateDate" formControlName="createDate"
+        placeholder="Creation Date" [ngModel]="currentDate | date:'yyyy-MM-dd'">
+    </div>
+  </div>
+  <!-- Completion Date of task. -->
+  <div class="form-group row my-3">
+    <label for="inputfinishDate" class="col-sm-2 col-form-label">Completion Date
+    </label>
+    <div class="col-sm-10">
+      <input type="date" class="form-control" id="inputfinishDate" formControlName="endDate"
+        placeholder="Completion Date">
+    </div>
+  </div>
+
+  <!-- Task priority Radio -->
+  <fieldset class="form-group my-3">
+    <div class="row">
+      <legend class="col-form-label col-sm-2 pt-0">Task Priority</legend>
+      <div class="col-sm-10">
+        <div class="form-check">
+          <input class="form-check-input" [(ngModel)]="gridRadiosPriority" type="radio"
+            formControlName="gridRadiosPriority" name="gridRadiosPriority" id="gridRadiosPriority1" value="#F7B8B6"
+            checked>
+          <label class="form-check-label" for="gridRadiosPriority1">
+            High
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" [(ngModel)]="gridRadiosPriority" type="radio"
+            formControlName="gridRadiosPriority" name="gridRadiosPriority" id="gridRadiosPriority2" value="#FFEF9F">
+          <label class="form-check-label" for="gridRadiosPriority2">
+            Medium
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" [(ngModel)]="gridRadiosPriority" type="radio"
+            formControlName="gridRadiosPriority" name="gridRadiosPriority" id="gridRadiosPriority3" value="#DBFBFA">
+          <label class="form-check-label" for="gridRadiosPriority3">
+            Low
+          </label>
+        </div>
+      </div>
+    </div>
+  </fieldset>
+  <div class="form-group row justify-content-center">
+    <div class="col-sm-1 ">
+      <button type="submit" class="btn btn-primary px-5">Add</button>
+    </div>
+  </div>
+</form>
+
+
+<!-- Home of list of tasks -->
+<section class="container" cdkDropListGroup>
+  <div class="row justify-content-between mb-4">
+
+    <!-- New Task Section. -->
+    <div class="list-group row col-sm-4 status_list rounded">
+      <div class="d-flex justify-content-center py-2">
+        <h3>New</h3>
+      </div>
+      <div class="task_cards" id="new_drag" cdkDropList [cdkDropListData]="tasksList" cdkDropListSortingDisabled
+        (cdkDropListDropped)="drop($event)">
+        <div class="list-group-item list-group-item-action my-2 rounded" *ngFor="let task of filterItemsOfType('New')"
+          [ngStyle]="{'background-color': task.priority}" cdkDrag [cdkDragData]= task.CardId>
+          <div>
+            <div class="d-flex w-100 justify-content-between">
+              <h5 class="mb-1 text-dark">{{ task.title }}</h5>
+              <div>
+                <a role="button" (click)="deleteTask(task.CardId)" href="#"><i class="fas fa-trash mx-1"></i></a>
+                <a role="button" (click)="setTaskToModal(task.CardId)" data-toggle="modal" data-target="#staticBackdrop"
+                  href="#"><i class="fas fa-edit mx-1"></i></a>
+              </div>
+            </div>
+            <p class="mb-1">{{task.description}}</p>
+            <div>
+              <small>Start Date: {{task.startDate}}</small>
+            </div>
+            <small>Completion Date: {{task.endDate}}</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- In Progess Task Section. -->
+    <div class="list-group row col-sm-4 status_list">
+      <div class="d-flex justify-content-center py-2">
+        <h3>In Progress</h3>
+      </div>
+      <div class="task_cards" id="prog_drag" cdkDropList [cdkDropListData]="tasksList" cdkDropListSortingDisabled
+        (cdkDropListDropped)="drop($event)">
+        <div class="list-group-item list-group-item-action my-2 rounded"
+          *ngFor="let task of filterItemsOfType('In Progress')" [ngStyle]="{'background-color': task.priority}" cdkDrag>
+          <div>
+            <div class="d-flex w-100 justify-content-between">
+              <h5 class="mb-1 text-dark">{{ task.title }}</h5>
+              <div>
+                <a role="button" (click)="deleteTask(task.CardId)" href="#"><i class="fas fa-trash mx-1"></i></a>
+                <a role="button" (click)="setTaskToModal(task.CardId)" data-toggle="modal" data-target="#staticBackdrop"
+                  href="#"><i class="fas fa-edit mx-1"></i></a>
+
+              </div>
+            </div>
+            <p class="mb-1">{{task.description}}</p>
+            <div>
+              <small>Start Date: {{task.startDate}}</small>
+            </div>
+            <small>Completion Date: {{task.endDate}}</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Completed Task Section. -->
+    <div class="list-group row col-sm-4 status_list">
+      <div class="d-flex justify-content-center py-2">
+        <h3>Completed</h3>
+      </div>
+      <div class="task_cards" cdkDropList [cdkDropListData]="tasksList" cdkDropListSortingDisabled
+        (cdkDropListDropped)="drop($event)">
+        <div class="list-group-item list-group-item-action my-2 rounded"
+          *ngFor="let task of filterItemsOfType('Completed')" [ngStyle]="{'background-color': task.priority}" cdkDrag
+           >
+          <div>
+            <div class="d-flex w-100 justify-content-between">
+              <h5 class="mb-1 text-dark">{{ task.title }}</h5>
+              <div>
+                <a role="button" (click)="deleteTask(task.CardId)" href="#"><i class="fas fa-trash mx-1"></i></a>
+              </div>
+            </div>
+            <p class="mb-1">{{task.description}}</p>
+            <div>
+              <small>Start Date: {{task.startDate}}</small>
+            </div>
+            <small>Completion Date: {{task.endDate}}</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- Session 2 Assignment -->
+
+<!-- Modal -->
+<div [formGroup]="editform" class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false"
+  tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Task Manager</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body form-task">
+        <!-- <div
+          class="container my-5 border border-primary rounded p-4 form-task" id="add_task"> -->
+        <!-- Task title.  -->
+        <div class="form-group row my-3">
+          <label for="inputtitle" class="col-sm-2 col-form-label">Title</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" formControlName="titleEdit" id="inputtitleModal"
+              placeholder="Title">
+          </div>
+        </div>
+        <!-- Task Description -->
+        <div class="form-group row my-3">
+          <label for="inputdesc" class="col-sm-2 col-form-label">Description</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" formControlName="descEdit" id="inputdescModal"
+              placeholder="Description">
+          </div>
+        </div>
+        <!-- Task Status. -->
+        <fieldset class="form-group my-3">
+          <div class="row">
+            <legend class="col-form-label col-sm-2 pt-0">Task Status</legend>
+            <div class="col-sm-10">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" formControlName="radiostatus" name="radiostatus"
+                  id="gridRadiosStatus1" value="New">
+                <label class="form-check-label" for="gridRadiosStatus1">
+                  New
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" formControlName="radiostatus" name="radiostatus"
+                  id="gridRadiosStatus2" value="In Progress">
+                <label class="form-check-label" for="gridRadiosStatus2">
+                  In Progress
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" formControlName="radiostatus" name="radiostatus"
+                  id="gridRadiosStatus3" value="Completed">
+                <label class="form-check-label" for="gridRadiosStatus3">
+                  Completed
+                </label>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+        <!-- Creation Date input field. -->
+        <div class="form-group row my-3">
+          <label for="inputCreateDate" class="col-sm-2 col-form-label">Creation Date</label>
+          <div class="col-sm-10">
+            <input type="date" class="form-control" formControlName="startDateEdit" id="inputCreateDateModal"
+              placeholder="Creation Date" value="currentDate | date:'yyyy-MM-dd'">
+          </div>
+        </div>
+        <!-- Completion Date of task. -->
+        <div class="form-group row my-3">
+          <label for="inputfinishDate" class="col-sm-2 col-form-label">Completion Date
+          </label>
+          <div class="col-sm-10">
+            <input type="date" class="form-control" formControlName="endDateEdit" id="inputfinishDateModal"
+              placeholder="Completion Date">
+          </div>
+        </div>
+
+        <!-- Task priority Radio -->
+        <fieldset class="form-group my-3">
+          <div class="row">
+            <legend class="col-form-label col-sm-2 pt-0">Task Priority</legend>
+            <div class="col-sm-10">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" formControlName="radiopriority" name="radiopriority"
+                  id="gridRadiosPriority1" value="#F7B8B6" checked>
+                <label class="form-check-label" for="gridRadiosPriority1">
+                  High
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" formControlName="radiopriority" name="radiopriority"
+                  id="gridRadiosPriority2" value="#FFEF9F">
+                <label class="form-check-label" for="gridRadiosPriority2">
+                  Medium
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" formControlName="radiopriority" name="radiopriority"
+                  id="gridRadiosPriority3" value="#DBFBFA">
+                <label class="form-check-label" for="gridRadiosPriority3">
+                  Low
+                </label>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" (click)="updateDetails()" data-dismiss="modal" class="btn btn-primary">Update Task</button>
+      </div>
+    </div>
+  </div>
+</div>
